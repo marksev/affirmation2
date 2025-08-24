@@ -1,15 +1,12 @@
-name: Build and Release APK
+name: Test APK Build
 
 on:
-  # Trigger on push to main branch
-  push:
+  pull_request:
     branches: [ main ]
-  # Allow manual trigger
-  workflow_dispatch:
 
 jobs:
-  build-apk:
-    name: Build APK
+  test-apk-build:
+    name: Test APK Build
     runs-on: ubuntu-latest
     
     steps:
@@ -46,18 +43,22 @@ jobs:
       run: |
         flutter create --platforms android .
         
-    - name: Build APK
+    - name: Analyze Flutter code
+      run: flutter analyze
+      
+    - name: Run Flutter tests
+      run: flutter test
+      
+    - name: Test APK build
       run: flutter build apk --release
       
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: affirmation-app-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
-        retention-days: 30
-        
-    - name: Get APK info
+    - name: Verify APK was created
       run: |
-        APK_SIZE=$(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)
-        echo "APK Size: $APK_SIZE"
-        echo "APK Location: build/app/outputs/flutter-apk/app-release.apk"
+        if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+          APK_SIZE=$(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)
+          echo "✅ APK build successful!"
+          echo "📊 APK Size: $APK_SIZE"
+        else
+          echo "❌ APK build failed - file not found"
+          exit 1
+        fi

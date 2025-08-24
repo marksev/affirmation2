@@ -1,0 +1,70 @@
+name: Create Release with APK
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0, v1.0.1, etc.
+
+jobs:
+  build-and-release:
+    name: Build APK and Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for creating releases
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Build APK
+      run: flutter build apk --release
+      
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+    - name: Rename APK with version
+      run: |
+        cp build/app/outputs/flutter-apk/app-release.apk affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk
+        name: Affirmation App ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Affirmation App ${{ steps.get_version.outputs.VERSION }}
+          
+          ### 📱 How to Install on Android:
+          1. Download the APK file below
+          2. On your Android device, enable "Install unknown apps" in Settings
+          3. Open the downloaded APK file and follow the installation prompts
+          
+          ### ✨ Features:
+          - 12 affirmation categories with positive messages
+          - Smooth swipe navigation between affirmations
+          - Beautiful gradient design
+          - Offline support - no internet required
+          
+          ### 📋 What's New:
+          - See commit history for detailed changes
+          
+          **File:** `affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk`
+        draft: false
+        prerelease: false
