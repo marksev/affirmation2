@@ -26,11 +26,24 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Build Debug APK (faster to test)
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      # Build Release APK (optimized for publishing)
       - name: Build release APK
         run: flutter build apk --release
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      # Upload Debug APK
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+
+      # Upload Release APK
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
