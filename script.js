@@ -1,3 +1,9 @@
+// Global variables for affirmation viewer
+let currentCategory = '';
+let currentAffirmations = [];
+let currentIndex = 0;
+let startY = 0;
+let isDragging = false;
 // Affirmation categories and data
 const affirmationCategories = [
     'Self-Love',
@@ -156,7 +162,7 @@ const categoryDescriptions = {
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     createCategoryCards();
-    setupModalEvents();
+    setupAffirmationViewer();
 });
 
 function createCategoryCards() {
@@ -172,48 +178,204 @@ function createCategoryCards() {
             <p>${categoryDescriptions[category]}</p>
         `;
         
-        card.addEventListener('click', () => openAffirmationsModal(category));
+        card.addEventListener('click', () => openAffirmationViewer(category));
         grid.appendChild(card);
     });
 }
 
-function openAffirmationsModal(category) {
-    const modal = document.getElementById('affirmationsModal');
-    const title = document.getElementById('modalTitle');
-    const list = document.getElementById('affirmationsList');
+function openAffirmationViewer(category) {
+    currentCategory = category;
+    currentAffirmations = affirmations[category] || [];
+    currentIndex = 0;
     
-    title.textContent = category + ' Affirmations';
-    list.innerHTML = '';
+    const viewer = document.getElementById('affirmationViewer');
+    const title = document.getElementById('viewerTitle');
     
-    const categoryAffirmations = affirmations[category] || [];
-    categoryAffirmations.forEach(affirmation => {
-        const item = document.createElement('div');
-        item.className = 'affirmation-item';
-        item.textContent = affirmation;
-        list.appendChild(item);
-    });
+    title.textContent = category;
     
-    modal.style.display = 'block';
+    // Create progress indicators
+    createProgressIndicators();
+    
+    // Display first affirmation
+    displayCurrentAffirmation();
+    
+    // Show the viewer
+    viewer.style.display = 'block';
+    
+    // Add slide-in animation
+    setTimeout(() => {
+        viewer.style.opacity = '1';
+    }, 10);
 }
 
-function setupModalEvents() {
-    const modal = document.getElementById('affirmationsModal');
-    const closeBtn = document.getElementById('closeModal');
+function createProgressIndicators() {
+    const progressContainer = document.getElementById('progressIndicator');
+    progressContainer.innerHTML = '';
     
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-    
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
+    currentAffirmations.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot';
+        if (index === currentIndex) {
+            dot.classList.add('active');
         }
+        progressContainer.appendChild(dot);
     });
+}
+
+function displayCurrentAffirmation() {
+    const content = document.getElementById('affirmationContent');
+    const affirmation = currentAffirmations[currentIndex];
     
-    // Close modal with Escape key
+    content.innerHTML = `<p class="affirmation-text">${affirmation}</p>`;
+    
+    // Update progress indicators
+    updateProgressIndicators();
+}
+
+function updateProgressIndicators() {
+    const dots = document.querySelectorAll('.progress-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+    });
+}
+
+function navigateToAffirmation(direction) {
+    if (direction === 'next' && currentIndex < currentAffirmations.length - 1) {
+        currentIndex++;
+        displayCurrentAffirmation();
+        animateSlide('up');
+    } else if (direction === 'prev' && currentIndex > 0) {
+        currentIndex--;
+        displayCurrentAffirmation();
+        animateSlide('down');
+    }
+}
+
+function animateSlide(direction) {
+    const slide = document.getElementById('affirmationSlide');
+    slide.classList.remove('slide-up', 'slide-down');
+    
+    // Trigger reflow
+    slide.offsetHeight;
+    
+    if (direction === 'up') {
+        slide.classList.add('slide-up');
+    } else {
+        slide.classList.add('slide-down');
+    }
+}
+
+function closeAffirmationViewer() {
+    const viewer = document.getElementById('affirmationViewer');
+    viewer.style.display = 'none';
+}
+
+function setupAffirmationViewer() {
+    const viewer = document.getElementById('affirmationViewer');
+    const backBtn = document.getElementById('backBtn');
+    const container = document.getElementById('affirmationContainer');
+    
+    // Back button event
+    backBtn.addEventListener('click', closeAffirmationViewer);
+    
+    // Keyboard navigation
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && modal.style.display === 'block') {
-            modal.style.display = 'none';
+        if (viewer.style.display === 'block') {
+            switch (event.key) {
+                case 'ArrowUp':
+                    event.preventDefault();
+                    navigateToAffirmation('prev');
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    navigateToAffirmation('next');
+                    break;
+                case 'Escape':
+                    closeAffirmationViewer();
+                    break;
+            }
         }
     });
+    
+    // Touch/swipe events
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    
+    // Mouse events for desktop
+    container.addEventListener('mousedown', handleMouseDown);
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('wheel', handleWheel, { passive: false });
+}
+
+function handleTouchStart(event) {
+    startY = event.touches[0].clientY;
+    isDragging = true;
+}
+
+function handleTouchMove(event) {
+    if (!isDragging) return;
+    event.preventDefault();
+}
+
+function handleTouchEnd(event) {
+    if (!isDragging) return;
+    
+    const endY = event.changedTouches[0].clientY;
+    const deltaY = startY - endY;
+    const threshold = 50;
+    
+    if (Math.abs(deltaY) > threshold) {
+        if (deltaY > 0) {
+            // Swiped up - next affirmation
+            navigateToAffirmation('next');
+        } else {
+            // Swiped down - previous affirmation
+            navigateToAffirmation('prev');
+        }
+    }
+    
+    isDragging = false;
+}
+
+function handleMouseDown(event) {
+    startY = event.clientY;
+    isDragging = true;
+    event.preventDefault();
+}
+
+function handleMouseMove(event) {
+    if (!isDragging) return;
+    event.preventDefault();
+}
+
+function handleMouseUp(event) {
+    if (!isDragging) return;
+    
+    const endY = event.clientY;
+    const deltaY = startY - endY;
+    const threshold = 50;
+    
+    if (Math.abs(deltaY) > threshold) {
+        if (deltaY > 0) {
+            navigateToAffirmation('next');
+        } else {
+            navigateToAffirmation('prev');
+        }
+    }
+    
+    isDragging = false;
+}
+
+function handleWheel(event) {
+    if (document.getElementById('affirmationViewer').style.display === 'block') {
+        event.preventDefault();
+        
+        if (event.deltaY > 0) {
+            navigateToAffirmation('next');
+        } else {
+            navigateToAffirmation('prev');
+        }
+    }
 }
