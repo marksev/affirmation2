@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.example.affirmation_app'
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
