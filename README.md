@@ -30,6 +30,13 @@ A Flutter mobile application for positive affirmations organized by categories.
 - **Web**: Run `flutter run -d chrome` or `flutter build web`
 - **Desktop**: Run `flutter run -d windows/macos/linux`
 
+### APK Download (Android Testing):
+1. Go to the [Actions tab](../../actions) in this repository
+2. Click on the latest "Build and Release APK" workflow run
+3. Download the "affirmation-app-apk" artifact
+4. Extract the ZIP file to get the APK
+5. Install the APK on your Android device (enable "Install unknown apps" in settings)
+
 ## Project Structure
 
 - `lib/main.dart` - Main app entry point
@@ -43,9 +50,17 @@ A Flutter mobile application for positive affirmations organized by categories.
 
 This Flutter app supports:
 - iOS (iPhone/iPad)
-- Android (phones/tablets)
+- Android (phones/tablets) - APK available via GitHub Actions
 - Web browsers
 - Desktop (Windows/macOS/Linux)
+
+## APK Build Process
+
+This repository includes GitHub Actions automation that:
+- Automatically builds an APK when code is pushed to main branch
+- Can be manually triggered from the Actions tab
+- Uploads the APK as a downloadable artifact
+- Works without needing local Flutter/Android SDK setup
 
 ## Requirements
 
