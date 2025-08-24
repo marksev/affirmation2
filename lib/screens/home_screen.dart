@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'affirmation_viewer_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key); // ✅ added const constructor
+
   final List<String> categories = [
     "Confidence",
     "Love",
@@ -31,10 +33,6 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    // ❌ This was causing the error
-                    // builder: (context) => AffirmationViewerScreen(category: category),
-
-                    // ✅ FIXED: no category argument (matches your current AffirmationViewerScreen)
                     builder: (context) => AffirmationViewerScreen(),
                   ),
                 );
