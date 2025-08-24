@@ -1,0 +1,64 @@
+name: Test APK Build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-apk-build:
+    name: Test APK Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Check if Android platform exists
+      id: check_android
+      run: |
+        if [ ! -d "android" ]; then
+          echo "android_exists=false" >> $GITHUB_OUTPUT
+        else
+          echo "android_exists=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Add Android platform support
+      if: steps.check_android.outputs.android_exists == 'false'
+      run: |
+        flutter create --platforms android .
+        
+    - name: Analyze Flutter code
+      run: flutter analyze
+      
+    - name: Run Flutter tests
+      run: flutter test
+      
+    - name: Test APK build
+      run: flutter build apk --release
+      
+    - name: Verify APK was created
+      run: |
+        if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+          APK_SIZE=$(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)
+          echo "✅ APK build successful!"
+          echo "📊 APK Size: $APK_SIZE"
+        else
+          echo "❌ APK build failed - file not found"
+          exit 1
+        fi
