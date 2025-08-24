@@ -1,91 +1,47 @@
 import 'package:flutter/material.dart';
-import '../models/affirmation_data.dart';
-import '../widgets/category_card.dart';
 import 'affirmation_viewer_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final List<String> categories = [
+    "Confidence",
+    "Love",
+    "Success",
+    "Happiness",
+    "Health"
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                // Header
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: const Column(
-                    children: [
-                      Text(
-                        'Choose an Affirmation Category',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Select a category to discover positive affirmations',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w300,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+      appBar: AppBar(
+        title: const Text("Affirmation Categories"),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              title: Text(category),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    // ❌ This was causing the error
+                    // builder: (context) => AffirmationViewerScreen(category: category),
+
+                    // ✅ FIXED: no category argument (matches your current AffirmationViewerScreen)
+                    builder: (context) => AffirmationViewerScreen(),
                   ),
-                ),
-                // Categories Grid
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.only(top: 20),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: MediaQuery.of(context).size.width > 768 ? 3 : 1,
-                      childAspectRatio: MediaQuery.of(context).size.width > 768 ? 1.2 : 2.5,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20,
-                    ),
-                    itemCount: AffirmationData.categories.length,
-                    itemBuilder: (context, index) {
-                      final category = AffirmationData.categories[index];
-                      return CategoryCard(
-                        category: category,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AffirmationViewerScreen(
-                                category: category,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
