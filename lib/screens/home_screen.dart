@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'affirmation_viewer_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key); // ✅ added const constructor
+  const HomeScreen({Key? key}) : super(key: key); // ✅ const constructor
 
-  final List<String> categories = [
+  final List<String> categories = const [ // ✅ list is const
     "Confidence",
     "Love",
     "Success",
@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AffirmationViewerScreen(),
+                    builder: (context) => const AffirmationViewerScreen(), 
                   ),
                 );
               },
