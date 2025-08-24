@@ -174,50 +174,66 @@ class _AffirmationViewerScreenState extends State<AffirmationViewerScreen>
                 ),
                 // Affirmation content
                 Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: _onPageChanged,
-                    itemCount: widget.category.affirmations.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 80,
-                        ),
-                        child: Center(
-                          child: Container(
-                            constraints: const BoxConstraints(maxWidth: 600),
-                            padding: const EdgeInsets.all(60),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 60,
-                                  offset: const Offset(0, 20),
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      // Handle vertical swipe like original app
+                      if (details.delta.dy > 5) {
+                        // Swipe down - previous affirmation
+                        if (_currentIndex > 0) {
+                          _navigateToAffirmation(_currentIndex - 1);
+                        }
+                      } else if (details.delta.dy < -5) {
+                        // Swipe up - next affirmation  
+                        if (_currentIndex < widget.category.affirmations.length - 1) {
+                          _navigateToAffirmation(_currentIndex + 1);
+                        }
+                      }
+                    },
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: _onPageChanged,
+                      itemCount: widget.category.affirmations.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 80,
+                          ),
+                          child: Center(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 600),
+                              padding: const EdgeInsets.all(60),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.95),
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 60,
+                                    offset: const Offset(0, 20),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
                                 ),
-                              ],
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.2),
-                                width: 1,
                               ),
-                            ),
-                            child: Text(
-                              widget.category.affirmations[index],
-                              style: const TextStyle(
-                                fontSize: 32,
-                                height: 1.4,
-                                color: Color(0xFF333333),
-                                fontWeight: FontWeight.w300,
-                                letterSpacing: 0.5,
+                              child: Text(
+                                widget.category.affirmations[index],
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  height: 1.4,
+                                  color: Color(0xFF333333),
+                                  fontWeight: FontWeight.w300,
+                                  letterSpacing: 0.5,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 // Navigation hints
@@ -226,7 +242,7 @@ class _AffirmationViewerScreenState extends State<AffirmationViewerScreen>
                   child: Column(
                     children: [
                       Text(
-                        'Swipe left or right to navigate',
+                        'Swipe up or down to navigate',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
                           fontSize: 14,
@@ -234,7 +250,7 @@ class _AffirmationViewerScreenState extends State<AffirmationViewerScreen>
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        'Tap to go back',
+                        'Tap back button to return',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
                           fontSize: 14,
