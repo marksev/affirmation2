@@ -1,4 +1,4 @@
-name: Build and Release React Native APK
+name: Build and Release Android APK
 
 on:
   # Trigger on push to main branch
@@ -9,19 +9,13 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK with EAS
+    name: Build Android APK
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
@@ -30,53 +24,11 @@ jobs:
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-      
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install Expo CLI
-      run: npm install -g @expo/cli
-      
-    - name: Install EAS CLI
-      run: npm install -g eas-cli
-      
-    - name: Create EAS build configuration
-      run: |
-        cat > eas.json << EOF
-        {
-          "cli": {
-            "version": ">= 7.8.4"
-          },
-          "build": {
-            "development": {
-              "developmentClient": true,
-              "distribution": "internal"
-            },
-            "preview": {
-              "distribution": "internal",
-              "android": {
-                "buildType": "apk"
-              }
-            },
-            "production": {
-              "android": {
-                "buildType": "apk"
-              }
-            }
-          },
-          "submit": {
-            "production": {}
-          }
-        }
-        EOF
         
-    - name: Build APK locally with Expo
+    - name: Build APK
       run: |
-        # Generate Android project
-        npx expo prebuild --platform android --clear
-        
-        # Build APK using Gradle
         cd android
+        chmod +x gradlew
         ./gradlew assembleRelease
         
     - name: Find APK file
@@ -89,7 +41,7 @@ jobs:
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: affirmation-app-apk
+        name: hello-world-app-apk
         path: ${{ steps.find_apk.outputs.apk_path }}
         retention-days: 30
         

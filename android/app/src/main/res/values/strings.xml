@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Affirmation App</string>
-    <string name="title_activity_main">Affirmation App</string>
-    <string name="package_name">com.example.affirmation</string>
-    <string name="custom_url_scheme">com.example.affirmation</string>
-</resources>

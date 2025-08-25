@@ -1,8 +1,0 @@
-{
-  "appId": "com.example.affirmation",
-  "appName": "Affirmation App",
-  "webDir": "www",
-  "server": {
-    "androidScheme": "https"
-  }
-}
