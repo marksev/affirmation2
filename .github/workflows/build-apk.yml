@@ -1,4 +1,4 @@
-name: Build and Release Flutter APK
+name: Build and Release Android APK
 
 on:
   # Trigger on push to main branch
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build Flutter APK
+    name: Build Android APK
     runs-on: ubuntu-latest
     
     steps:
@@ -22,22 +22,19 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
         
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.3'
-        channel: 'stable'
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
         
-    - name: Get Flutter dependencies
-      run: flutter pub get
-      
     - name: Build APK
-      run: flutter build apk --release
+      run: |
+        cd android
+        chmod +x gradlew
+        ./gradlew assembleRelease
         
     - name: Find APK file
       id: find_apk
       run: |
-        APK_PATH=$(find build/app/outputs/flutter-apk -name "*.apk" -type f | head -1)
+        APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" -type f | head -1)
         echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
         echo "Found APK at: $APK_PATH"
         

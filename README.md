@@ -1,27 +1,27 @@
-# Hello World Flutter App
+# Hello World Android App
 
-A simple Flutter application that displays "HELLO WORLD" on the screen.
+A simple Android application that displays "HELLO WORLD" on the screen.
 
 ## Features
 
-- Clean and simple Flutter app
-- Displays "HELLO WORLD" message
-- Material Design UI
+- Clean and simple Android app
+- Displays "HELLO WORLD" message in large text
+- Centered layout
+- Material Design theme
 - Automatic APK building via GitHub Actions
 
 ## Getting Started
 
 ### Prerequisites
 
-- Flutter SDK (3.24.3 or later)
 - Android SDK
 - Java 17+
 
 ### Building the App
 
 1. Clone this repository
-2. Run `flutter pub get` to install dependencies
-3. Run `flutter build apk --release` to build the APK
+2. Navigate to the `android` directory
+3. Run `./gradlew assembleRelease` to build the APK
 
 ### APK Download
 
@@ -30,17 +30,21 @@ The APK is automatically built using GitHub Actions on every push to the main br
 ## Project Structure
 
 ```
-├── lib/
-│   └── main.dart          # Main Flutter app code
-├── android/               # Android-specific configuration
+├── android/               # Android project
+│   ├── app/
+│   │   ├── src/main/kotlin/com/example/hello_world_app/
+│   │   │   └── MainActivity.kt    # Main activity that shows HELLO WORLD
+│   │   └── src/main/AndroidManifest.xml
+│   ├── build.gradle       # Project build configuration
+│   └── gradlew           # Gradle wrapper
 ├── .github/workflows/     # GitHub Actions workflow
-└── pubspec.yaml          # Flutter dependencies
+└── README.md
 ```
 
 ## How it Works
 
 When you open the app, it displays a centered "HELLO WORLD" text with:
-- Purple color scheme
-- Bold, large font size
-- Material Design app bar
-- Clean, minimalist design
+- Large font size (32sp)
+- Centered in the middle of the screen
+- Material Design theme
+- Clean, white background
