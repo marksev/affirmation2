@@ -31,10 +31,10 @@ migrate_working_dir/
 /build/
 
 # Android related
-**/android/**/gradle-wrapper.jar
+# **/android/**/gradle-wrapper.jar (commented out to allow wrapper)
 **/android/.gradle
 **/android/captures/
-**/android/gradlew
+# **/android/gradlew (commented out to allow wrapper script)
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
