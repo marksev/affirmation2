@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK with EAS
+    name: Build APK with Expo
     runs-on: ubuntu-latest
     
     steps:
@@ -35,14 +35,14 @@ jobs:
       run: npm ci
       
     - name: Install Expo CLI
-      run: npm install -g @expo/cli
+      run: npm install -g @expo/cli@latest
       
-    - name: Install EAS CLI
-      run: npm install -g eas-cli
+    - name: Install EAS CLI  
+      run: npm install -g eas-cli@latest
       
     - name: Create EAS build configuration
       run: |
-        cat > eas.json << EOF
+        cat > eas.json << 'EOF'
         {
           "cli": {
             "version": ">= 7.8.4"
@@ -70,21 +70,30 @@ jobs:
         }
         EOF
         
-    - name: Build APK locally with Expo
+    - name: Generate Android project
       run: |
-        # Generate Android project
-        npx expo prebuild --platform android --clear
+        npx expo prebuild --platform android --no-install
         
-        # Build APK using Gradle
+    - name: Make Gradle wrapper executable
+      run: chmod +x android/gradlew
+        
+    - name: Build APK using Gradle
+      run: |
         cd android
-        ./gradlew assembleRelease
+        ./gradlew assembleRelease --no-daemon --stacktrace
         
     - name: Find APK file
       id: find_apk
       run: |
         APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" -type f | head -1)
+        if [ -z "$APK_PATH" ]; then
+          echo "No APK file found!"
+          find android/app/build -name "*.apk" -type f || true
+          exit 1
+        fi
         echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
         echo "Found APK at: $APK_PATH"
+        ls -la "$APK_PATH"
         
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
@@ -98,9 +107,16 @@ jobs:
         APK_PATH="${{ steps.find_apk.outputs.apk_path }}"
         if [ -f "$APK_PATH" ]; then
           APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
-          echo "APK Size: $APK_SIZE"
-          echo "APK Location: $APK_PATH"
+          echo "✅ APK Build Successful!"
+          echo "📱 APK Size: $APK_SIZE"
+          echo "📍 APK Location: $APK_PATH"
+          echo ""
+          echo "To install on Android device:"
+          echo "1. Download the artifact from this workflow run"
+          echo "2. Extract the ZIP file"
+          echo "3. Enable 'Install unknown apps' in Android settings"
+          echo "4. Install the APK file"
         else
-          echo "APK file not found!"
+          echo "❌ APK file not found!"
           exit 1
         fi
