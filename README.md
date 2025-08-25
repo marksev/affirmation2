@@ -38,23 +38,20 @@ A positive affirmation mobile app built with HTML, CSS, JavaScript, and Capacito
 - Gradle installed
 
 #### Build Steps
-1. Install dependencies:
+1. **One-command build:**
+   ```bash
+   npm run build-apk
+   ```
+
+2. **Manual build steps:**
    ```bash
    npm install
-   ```
-
-2. Sync Capacitor:
-   ```bash
    npx cap sync
-   ```
-
-3. Build the APK:
-   ```bash
    cd android
    ./gradlew assembleDebug
    ```
 
-4. Find your APK at:
+3. **Find your APK at:**
    ```
    android/app/build/outputs/apk/debug/app-debug.apk
    ```
@@ -108,8 +105,9 @@ A positive affirmation mobile app built with HTML, CSS, JavaScript, and Capacito
 
 ### Local Development
 ```bash
-# Serve locally
-python3 -m http.server 8080
+# Serve locally for testing
+npm run serve
+# Then visit http://localhost:8080
 
 # Or use any static file server
 npx serve .

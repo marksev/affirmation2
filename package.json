@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'Build complete'",
+    "build": "./build-apk.sh",
+    "build-apk": "./build-apk.sh",
     "start": "npx cap run android",
     "android": "npx cap run android",
-    "sync": "npx cap sync"
+    "sync": "npx cap sync",
+    "serve": "python3 -m http.server 8080"
   },
-  "keywords": [],
+  "keywords": ["affirmation", "mobile", "android", "capacitor", "html", "wellness"],
   "author": "",
   "license": "ISC",
   "description": "Affirmation app built with HTML and Capacitor",
