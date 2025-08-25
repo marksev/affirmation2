@@ -1,81 +1,130 @@
-# React Native Affirmation App
+# Affirmation App - HTML Version
 
-A React Native mobile application featuring 12 positive affirmation categories to inspire and motivate users. Built with Expo and TypeScript.
+A positive affirmation mobile app built with HTML, CSS, JavaScript, and Capacitor for Android APK generation.
 
-## Features
+## 🌟 Features
 
 - **12 Affirmation Categories**: Self-Love, Confidence, Success, Health, Abundance, Gratitude, Relationships, Healing, Mindfulness, Motivation, Positivity, and Stress Relief
-- **Cross-Platform**: Works on iOS and Android
-- **Interactive Categories**: Tap any category to view related affirmations
-- **Swipeable Interface**: Smooth swipe navigation between affirmations
-- **Modern UI**: Beautiful gradient background and card-based layout
-- **TypeScript**: Fully typed for better development experience
+- **8 Affirmations per Category**: Total of 96 carefully crafted positive affirmations
+- **Beautiful Gradient UI**: Responsive design with smooth animations
+- **Touch Navigation**: Swipe between affirmations on mobile devices
+- **Keyboard Support**: Arrow keys for navigation on desktop
+- **Mobile-Optimized**: Responsive design for all screen sizes
 
-## How to Use
+## 📱 Screenshots
 
-### For Development:
+### Home Screen - Category Selection
+![Home Screen](https://github.com/user-attachments/assets/fb6b73f9-abcc-43a9-b83c-d4b30ca05992)
 
-1. Ensure you have Node.js (v18+) installed
-2. Clone this repository
-3. Run `npm install` to install dependencies
-4. Run `npm start` to start the Expo development server
-5. Use Expo Go app on your phone or run on simulator
+### Affirmation Viewer
+![Affirmation Screen](https://github.com/user-attachments/assets/4cf5f356-2119-4568-8189-c066d52bbe5f)
 
-### For Users:
+## 🚀 Quick Start
 
-Download the APK from GitHub Actions artifacts to install on Android devices.
+### Web Version
+1. Open `index.html` in your web browser
+2. Or run a local server:
+   ```bash
+   python3 -m http.server 8080
+   # Then visit http://localhost:8080
+   ```
 
-### APK Download (Android Testing):
+### Android APK Build
 
-#### Option 1: Download from GitHub Actions (Recommended)
-1. Go to the [Actions tab](../../actions) in this repository
-2. Click on the latest "Build and Release React Native APK" workflow run
-3. Download the "affirmation-app-apk" artifact
-4. Extract the ZIP file to get the APK
-5. Install the APK on your Android device (enable "Install unknown apps" in settings)
+#### Prerequisites
+- Node.js 18+ installed
+- Java 17+ installed
+- Android SDK installed
+- Gradle installed
 
-#### Option 2: Build Locally (Requires Node.js and Android SDK)
-1. Install Node.js: https://nodejs.org/
-2. Install Android Studio: https://developer.android.com/studio
-3. Clone this repository
-4. Run `npm install`
-5. Run `npm run android` (requires Android emulator or connected device)
+#### Build Steps
+1. **One-command build:**
+   ```bash
+   npm run build-apk
+   ```
 
-## Requirements
+2. **Manual build steps:**
+   ```bash
+   npm install
+   npx cap sync
+   cd android
+   ./gradlew assembleDebug
+   ```
 
-- Node.js 18.0.0 or higher
-- Expo CLI
-- For Android builds: Android SDK and Java 17
+3. **Find your APK at:**
+   ```
+   android/app/build/outputs/apk/debug/app-debug.apk
+   ```
 
-## Development Scripts
+#### Alternative: Use Android Studio
+1. Open the `android` folder in Android Studio
+2. Build → Generate Signed Bundle / APK
+3. Follow the wizard to create your APK
 
-- `npm start` - Start the Expo development server
-- `npm run android` - Start the app on Android
-- `npm run ios` - Start the app on iOS (macOS only)
-- `npm run web` - Start the app in web browser
-
-## Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **React Navigation** - Navigation library
-- **Expo Linear Gradient** - Gradient backgrounds
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-src/
-├── components/     # Reusable UI components
-├── screens/        # App screens
-├── data/          # Static data (affirmations)
-├── types/         # TypeScript type definitions
+├── index.html          # Main HTML file
+├── styles.css          # All styling and responsive design
+├── app.js             # JavaScript application logic
+├── data.js            # Affirmation data
+├── www/               # Capacitor web assets
+├── android/           # Generated Capacitor Android project
+├── capacitor.config.json  # Capacitor configuration
+└── package.json       # Node.js dependencies
 ```
 
-## Contributing
+## 🎨 Design Features
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- **Gradient Backgrounds**: Beautiful purple gradient (#667eea to #764ba2)
+- **Card-Based Layout**: Clean white cards for categories and affirmations
+- **Smooth Animations**: CSS transitions for screen changes and interactions
+- **Touch Gestures**: Swipe left/right to navigate affirmations
+- **Responsive Grid**: Adaptive layout for different screen sizes
+- **Safe Area Support**: iOS/Android safe area compatibility
+
+## 🔧 Technical Details
+
+- **Pure HTML/CSS/JavaScript**: No frameworks or dependencies
+- **Capacitor**: Cross-platform native runtime
+- **Android Target**: API level configured for modern devices
+- **Touch Events**: Native touch gesture support
+- **Keyboard Navigation**: Arrow keys and Escape key support
+
+## 📱 How to Use
+
+1. **Home Screen**: Select any of the 12 affirmation categories
+2. **Affirmation View**: Read the affirmation and navigate with:
+   - Swipe left/right (mobile)
+   - Click navigation arrows
+   - Use arrow keys (desktop)
+   - Press Escape to go back
+3. **Back Navigation**: Return to category selection
+
+## 🛠️ Development
+
+### Local Development
+```bash
+# Serve locally for testing
+npm run serve
+# Then visit http://localhost:8080
+
+# Or use any static file server
+npx serve .
+```
+
+### Capacitor Commands
+```bash
+# Add platform
+npx cap add android
+
+# Sync changes
+npx cap sync
+
+# Open in Android Studio
+npx cap open android
+```
+
+## 📝 License
+
+This project is open source and available under the MIT License.

@@ -1,29 +1,22 @@
 {
   "name": "affirmation2",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "index.html",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "build": "./build-apk.sh",
+    "build-apk": "./build-apk.sh",
+    "start": "npx cap run android",
+    "android": "npx cap run android",
+    "sync": "npx cap sync",
+    "serve": "python3 -m http.server 8080"
   },
+  "keywords": ["affirmation", "mobile", "android", "capacitor", "html", "wellness"],
+  "author": "",
+  "license": "ISC",
+  "description": "Affirmation app built with HTML and Capacitor",
   "dependencies": {
-    "@react-navigation/native": "^7.1.17",
-    "@react-navigation/stack": "^7.4.7",
-    "expo": "~53.0.22",
-    "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
-    "react-native": "0.79.6",
-    "react-native-gesture-handler": "^2.28.0",
-    "react-native-safe-area-context": "^5.6.1",
-    "react-native-screens": "^4.15.2",
-    "expo-linear-gradient": "~14.1.5"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@types/react": "~19.0.10",
-    "typescript": "~5.8.3"
-  },
-  "private": true
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  }
 }
