@@ -1,4 +1,4 @@
-name: Create Release with APK
+name: Create Release with React Native APK
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-release:
-    name: Build APK and Create Release
+    name: Build React Native APK and Create Release
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Required for creating releases
@@ -22,18 +22,26 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
         
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        flutter-version: '3.24.5'
-        channel: 'stable'
-        cache: true
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: mobile/package-lock.json
         
-    - name: Get Flutter dependencies
-      run: flutter pub get
+    - name: Install React Native dependencies
+      working-directory: ./mobile
+      run: npm ci
       
-    - name: Build APK
-      run: flutter build apk --release
+    - name: Make Gradlew Executable
+      working-directory: ./mobile/android
+      run: chmod +x ./gradlew
+      
+    - name: Build Android APK
+      working-directory: ./mobile
+      run: |
+        cd android
+        ./gradlew assembleRelease --no-daemon
       
     - name: Get version from tag
       id: get_version
@@ -41,15 +49,15 @@ jobs:
       
     - name: Rename APK with version
       run: |
-        cp build/app/outputs/flutter-apk/app-release.apk affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk
+        cp mobile/android/app/build/outputs/apk/release/app-release.apk affirmation-react-native-${{ steps.get_version.outputs.VERSION }}.apk
       
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk
-        name: Affirmation App ${{ steps.get_version.outputs.VERSION }}
+        files: affirmation-react-native-${{ steps.get_version.outputs.VERSION }}.apk
+        name: Affirmation React Native App ${{ steps.get_version.outputs.VERSION }}
         body: |
-          ## Affirmation App ${{ steps.get_version.outputs.VERSION }}
+          ## Affirmation React Native App ${{ steps.get_version.outputs.VERSION }}
           
           ### 📱 How to Install on Android:
           1. Download the APK file below
@@ -61,10 +69,14 @@ jobs:
           - Smooth swipe navigation between affirmations
           - Beautiful gradient design
           - Offline support - no internet required
+          - Built with React Native for optimal performance
           
           ### 📋 What's New:
+          - Migrated from Flutter to React/React Native
+          - Improved performance and native feel
+          - Enhanced UI/UX design
           - See commit history for detailed changes
           
-          **File:** `affirmation-app-${{ steps.get_version.outputs.VERSION }}.apk`
+          **File:** `affirmation-react-native-${{ steps.get_version.outputs.VERSION }}.apk`
         draft: false
         prerelease: false

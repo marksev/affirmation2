@@ -1,4 +1,4 @@
-name: Build and Release APK
+name: Build and Release React Native APK
 
 on:
   # Trigger on push to main branch
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-apk:
-    name: Build APK
+    name: Build React Native APK
     runs-on: ubuntu-latest
     
     steps:
@@ -22,42 +22,50 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
         
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        flutter-version: '3.24.5'
-        channel: 'stable'
-        cache: true
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: mobile/package-lock.json
         
-    - name: Get Flutter dependencies
-      run: flutter pub get
+    - name: Install React Native dependencies
+      working-directory: ./mobile
+      run: npm ci
       
-    - name: Check if Android platform exists
-      id: check_android
-      run: |
-        if [ ! -d "android" ]; then
-          echo "android_exists=false" >> $GITHUB_OUTPUT
-        else
-          echo "android_exists=true" >> $GITHUB_OUTPUT
-        fi
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('mobile/android/gradle/wrapper/gradle-wrapper.properties') }}
         
-    - name: Add Android platform support
-      if: steps.check_android.outputs.android_exists == 'false'
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('mobile/android/gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-caches-
+          
+    - name: Make Gradlew Executable
+      working-directory: ./mobile/android
+      run: chmod +x ./gradlew
+      
+    - name: Build Android APK
+      working-directory: ./mobile
       run: |
-        flutter create --platforms android .
-        
-    - name: Build APK
-      run: flutter build apk --release
+        cd android
+        ./gradlew assembleRelease --no-daemon
       
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
-        name: affirmation-app-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: affirmation-react-native-apk
+        path: mobile/android/app/build/outputs/apk/release/app-release.apk
         retention-days: 30
         
     - name: Get APK info
       run: |
-        APK_SIZE=$(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)
+        APK_SIZE=$(du -h mobile/android/app/build/outputs/apk/release/app-release.apk | cut -f1)
         echo "APK Size: $APK_SIZE"
-        echo "APK Location: build/app/outputs/flutter-apk/app-release.apk"
+        echo "APK Location: mobile/android/app/build/outputs/apk/release/app-release.apk"
