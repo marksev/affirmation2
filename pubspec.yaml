@@ -1,5 +1,5 @@
 name: affirmation_app
-description: A Flutter affirmation app with positive affirmations organized by categories
+description: A Flutter affirmation app with 12 positive affirmation categories
 publish_to: 'none'
 version: 1.0.0+1
 
