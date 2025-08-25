@@ -1,58 +1,37 @@
-name: Build and Release Android APK
+name: Build Flutter APK
 
 on:
-  # Trigger on push to main branch
   push:
-    branches: [ main ]
-  # Allow manual trigger
-  workflow_dispatch:
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  build-apk:
-    name: Build Android APK
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-        
-    - name: Build APK
-      run: |
-        cd android
-        chmod +x gradlew
-        ./gradlew assembleRelease
-        
-    - name: Find APK file
-      id: find_apk
-      run: |
-        APK_PATH=$(find android/app/build/outputs/apk -name "*.apk" -type f | head -1)
-        echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
-        echo "Found APK at: $APK_PATH"
-        
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: hello-world-app-apk
-        path: ${{ steps.find_apk.outputs.apk_path }}
-        retention-days: 30
-        
-    - name: Get APK info
-      run: |
-        APK_PATH="${{ steps.find_apk.outputs.apk_path }}"
-        if [ -f "$APK_PATH" ]; then
-          APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
-          echo "APK Size: $APK_SIZE"
-          echo "APK Location: $APK_PATH"
-        else
-          echo "APK file not found!"
-          exit 1
-        fi
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0' # use your Flutter version
+
+      # Get Flutter dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Build APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
